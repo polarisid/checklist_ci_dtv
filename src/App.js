@@ -156,6 +156,7 @@ function App() {
     numeroSerie: '',
     dataVisita: '',
     versao: '',
+    nomeTecnico:'',
   });
 
   const [observacoes, setObservacoes] = useState('');
@@ -186,6 +187,7 @@ function App() {
       numeroSerie: '',
       dataVisita: '',
       versao: '',
+      nometecnico:'',
     });
     setObservacoes('');
     signatureRef.current.clear();
@@ -211,7 +213,7 @@ function App() {
     firstPage.drawText(formHeaderData.numeroSerie, { x: 385, y: height - 80, size: 10, font });
     firstPage.drawText(formHeaderData.dataVisita, { x: 385, y: height - 95, size: 10, font });
     firstPage.drawText(formHeaderData.versao, { x: 270, y: height - 95, size: 10, font });
-
+    firstPage.drawText(formHeaderData.nomeTecnico, { x: 120, y: height - 800, size: 10, font });
 
     // Sintomas: desenhar X
     const drawIfChecked = (name, x, y) => {
@@ -323,6 +325,7 @@ function App() {
       <input name="numeroOS" placeholder="Número OS" onChange={handleHeaderChange} value={formHeaderData.numeroOS} style={styles.input} />
       <input name="numeroSerie" placeholder="Número de Série" onChange={handleHeaderChange} value={formHeaderData.numeroSerie} style={styles.input} />
       <input name="dataVisita" placeholder="Data Visita" onChange={handleHeaderChange} value={formHeaderData.dataVisita} style={styles.input} />
+      <input name="nomeTecnico" placeholder="Nome do Técnico" onChange={handleHeaderChange} value={formHeaderData.nomeTecnico} style={styles.input} />
 
       {/* Seleção Bloco */}
       <select onChange={handleBlockChange} value={selectedBlock} style={styles.select}>
