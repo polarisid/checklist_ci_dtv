@@ -1,8 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { saveAs } from 'file-saver';
 import SignatureCanvas from 'react-signature-canvas'; 
 import { Html5Qrcode } from 'html5-qrcode';
+import { BrowserMultiFormatReader } from '@zxing/browser';
+
+
+
 
 // Blocos estruturados
 const blocos = {
@@ -148,9 +152,8 @@ const styles = {
 };
 
 function App() {
-
-  
-  const [showScanner, setShowScanner] = useState(false);
+  const codeReader = new BrowserMultiFormatReader();
+const videoRef = useRef(null);
   const [selectedBlock, setSelectedBlock] = useState('');
   const [formData, setFormData] = useState({});
   const [formHeaderData, setFormHeaderData] = useState({
@@ -351,18 +354,28 @@ function App() {
       <input name="modelo" placeholder="Modelo" onChange={handleHeaderChange} value={formHeaderData.modelo} style={styles.input} />
       <input name="versao" placeholder="Versão" onChange={handleHeaderChange} value={formHeaderData.versao} style={styles.input} />
       <input name="numeroOS" placeholder="Número OS" onChange={handleHeaderChange} value={formHeaderData.numeroOS} style={styles.input} />
+      <button
+  type="button"
+  onClick={() => {
+    codeReader.decodeFromVideoDevice(null, videoRef.current, (result, err) => {
+      if (result) {
+        setFormHeaderData((prev) => ({
+          ...prev,
+          numeroSerie: result.getText()
+        }));
+        codeReader.reset();
+      }
+    });
+  }}
+>
+  📷 Escanear
+</button>
+
+<video ref={videoRef} style={{ width: '300px', marginTop: '1rem' }} />
+
       <input name="numeroSerie" placeholder="Número de Série" onChange={handleHeaderChange} value={formHeaderData.numeroSerie} style={styles.input} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-  <input
-    name="numeroSerie"
-    placeholder="Número de Série"
-    onChange={handleHeaderChange}
-    value={formHeaderData.numeroSerie}
-    style={{ flex: 1, ...styles.input }}
-  />
-  <button type="button" onClick={startScanner} style={{ padding: '0.5rem 1rem' }}>
-    📷 Escanear
-  </button>
+
 </div>
 
 <div id="reader" style={{ width: '300px', marginTop: '1rem' }}></div>
