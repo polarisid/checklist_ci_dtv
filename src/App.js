@@ -6,9 +6,6 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { BrowserQRCodeReader } from '@zxing/browser';
 
-
-
-
 // Blocos estruturados
 const blocos = {
   Funcionamento: {
@@ -154,9 +151,31 @@ const styles = {
 
 function App() {
   const codeReader = new BrowserMultiFormatReader();
-const videoRef = useRef(null);
 const fileInputRef = useRef();
+const videoRef = useRef();
 
+const handleStartScanner = async () => {
+  try {
+    const devices = await BrowserMultiFormatReader.listVideoInputDevices();
+    const selectedDeviceId = devices[0]?.deviceId;
+
+    codeReader.decodeFromVideoDevice(
+      selectedDeviceId,
+      videoRef.current,
+      (result, err) => {
+        if (result) {
+          setFormHeaderData((prev) => ({
+            ...prev,
+            numeroSerie: result.getText()
+          }));
+          codeReader.reset();  // parar após ler
+        }
+      }
+    );
+  } catch (err) {
+    console.error('Erro ao acessar a câmera:', err);
+  }
+};
 
 const handleFileUpload = async (event) => {
   const file = event.target.files[0];
@@ -214,7 +233,12 @@ const handleFileUpload = async (event) => {
     });
   };
   
-
+  const formatarData = (isoDate) => {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('-');
+    return `${day}/${month}/${year}`;
+  };
+  
   const [observacoes, setObservacoes] = useState('');
   const signatureRef = useRef(null);
 
@@ -267,7 +291,7 @@ const handleFileUpload = async (event) => {
     firstPage.drawText(formHeaderData.modelo, { x: 95, y: height - 95, size: 10, font });
     firstPage.drawText(formHeaderData.numeroOS, { x: 385, y: height - 66, size: 10, font });
     firstPage.drawText(formHeaderData.numeroSerie, { x: 385, y: height - 80, size: 10, font });
-    firstPage.drawText(formHeaderData.dataVisita, { x: 385, y: height - 95, size: 10, font });
+    firstPage.drawText(formatarData(formHeaderData.dataVisita), { x: 385, y: height - 95, size: 10, font });
     firstPage.drawText(formHeaderData.versao, { x: 270, y: height - 95, size: 10, font });
     firstPage.drawText(formHeaderData.nomeTecnico, { x: 120, y: height - 800, size: 10, font });
 
@@ -381,20 +405,13 @@ const handleFileUpload = async (event) => {
       <input name="numeroOS" placeholder="Número OS" onChange={handleHeaderChange} value={formHeaderData.numeroOS} style={styles.input} />
       <input name="numeroSerie" placeholder="Número de Série" onChange={handleHeaderChange} value={formHeaderData.numeroSerie} style={styles.input} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      <input
-  type="file"
-  accept="image/*"
-  capture="environment"
-  style={{ display: 'none' }}
-  ref={fileInputRef}
-  onChange={handleFileUpload}
-/>
-<button
-  type="button"
-  onClick={() => fileInputRef.current.click()}
->
+
+<button onClick={handleStartScanner}>
   📷 Escanear Código
 </button>
+
+<video ref={videoRef} style={{ width: '300px', marginTop: '1rem' }} />
+
 </div>
 
 <div id="reader" style={{ width: '300px', marginTop: '1rem' }}></div>
