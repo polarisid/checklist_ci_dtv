@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { saveAs } from 'file-saver';
 import SignatureCanvas from 'react-signature-canvas'; 
+import { Html5Qrcode } from 'html5-qrcode';
 
 // Blocos estruturados
 const blocos = {
@@ -147,6 +148,9 @@ const styles = {
 };
 
 function App() {
+
+  
+  const [showScanner, setShowScanner] = useState(false);
   const [selectedBlock, setSelectedBlock] = useState('');
   const [formData, setFormData] = useState({});
   const [formHeaderData, setFormHeaderData] = useState({
@@ -158,6 +162,30 @@ function App() {
     versao: '',
     nomeTecnico:'',
   });
+
+  const startScanner = () => {
+    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      (decodedText) => {
+        setFormHeaderData((prev) => ({
+          ...prev,
+          numeroSerie: decodedText
+        }));
+        html5QrCode.stop();
+      },
+      (errorMessage) => {
+        console.warn(errorMessage);
+      }
+    ).catch((err) => {
+      console.error(err);
+    });
+  };
+  
 
   const [observacoes, setObservacoes] = useState('');
   const signatureRef = useRef(null);
@@ -324,6 +352,20 @@ function App() {
       <input name="versao" placeholder="Versão" onChange={handleHeaderChange} value={formHeaderData.versao} style={styles.input} />
       <input name="numeroOS" placeholder="Número OS" onChange={handleHeaderChange} value={formHeaderData.numeroOS} style={styles.input} />
       <input name="numeroSerie" placeholder="Número de Série" onChange={handleHeaderChange} value={formHeaderData.numeroSerie} style={styles.input} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+  <input
+    name="numeroSerie"
+    placeholder="Número de Série"
+    onChange={handleHeaderChange}
+    value={formHeaderData.numeroSerie}
+    style={{ flex: 1, ...styles.input }}
+  />
+  <button type="button" onClick={startScanner} style={{ padding: '0.5rem 1rem' }}>
+    📷 Escanear
+  </button>
+</div>
+
+<div id="reader" style={{ width: '300px', marginTop: '1rem' }}></div>
       <input name="dataVisita" placeholder="Data Visita" onChange={handleHeaderChange} value={formHeaderData.dataVisita} style={styles.input} />
       <input name="nomeTecnico" placeholder="Nome do Técnico" onChange={handleHeaderChange} value={formHeaderData.nomeTecnico} style={styles.input} />
 
