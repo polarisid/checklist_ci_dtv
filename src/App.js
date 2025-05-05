@@ -78,6 +78,7 @@ const blocos = {
 
 
 const styles = {
+
   container: {
     padding: '20px',
     maxWidth: '600px',
@@ -85,6 +86,7 @@ const styles = {
     fontFamily: 'Arial, sans-serif'
   },
   input: {
+    textTransform: 'uppercase',
     width: '100%',
     padding: '10px',
     margin: '5px 0',
@@ -101,6 +103,7 @@ const styles = {
     fontSize: '16px'
   },
   textarea: {
+    textTransform: 'uppercase',
     width: '100%',
     padding: '10px',
     margin: '10px 0',
@@ -404,17 +407,6 @@ const handleFileUpload = async (event) => {
       <input name="versao" placeholder="Versão" onChange={handleHeaderChange} value={formHeaderData.versao} style={styles.input} />
       <input name="numeroOS" placeholder="Número OS" onChange={handleHeaderChange} value={formHeaderData.numeroOS} style={styles.input} />
       <input name="numeroSerie" placeholder="Número de Série" onChange={handleHeaderChange} value={formHeaderData.numeroSerie} style={styles.input} />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-
-<button onClick={handleStartScanner}>
-  📷 Escanear Código
-</button>
-
-<video ref={videoRef} style={{ width: '300px', marginTop: '1rem' }} />
-
-</div>
-
-<div id="reader" style={{ width: '300px', marginTop: '1rem' }}></div>
       <input type= "date" name="dataVisita" placeholder="Data Visita" onChange={handleHeaderChange} value={formHeaderData.dataVisita} style={styles.input} />
       <input name="nomeTecnico" placeholder="Nome do Técnico" onChange={handleHeaderChange} value={formHeaderData.nomeTecnico} style={styles.input} />
 
