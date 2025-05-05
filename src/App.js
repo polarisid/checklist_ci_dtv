@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver';
 import SignatureCanvas from 'react-signature-canvas'; 
 import { Html5Qrcode } from 'html5-qrcode';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import { BrowserQRCodeReader } from '@zxing/browser';
 
 
 
@@ -154,6 +155,30 @@ const styles = {
 function App() {
   const codeReader = new BrowserMultiFormatReader();
 const videoRef = useRef(null);
+const fileInputRef = useRef();
+
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const imageBuffer = reader.result;
+      const codeReader = new BrowserQRCodeReader();
+      try {
+        const result = await codeReader.decodeFromImage(undefined, imageBuffer);
+        setFormHeaderData((prev) => ({
+          ...prev,
+          numeroSerie: result.getText()
+        }));
+      } catch (err) {
+        console.error('Falha ao ler código:', err);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
   const [selectedBlock, setSelectedBlock] = useState('');
   const [formData, setFormData] = useState({});
   const [formHeaderData, setFormHeaderData] = useState({
@@ -354,32 +379,26 @@ const videoRef = useRef(null);
       <input name="modelo" placeholder="Modelo" onChange={handleHeaderChange} value={formHeaderData.modelo} style={styles.input} />
       <input name="versao" placeholder="Versão" onChange={handleHeaderChange} value={formHeaderData.versao} style={styles.input} />
       <input name="numeroOS" placeholder="Número OS" onChange={handleHeaderChange} value={formHeaderData.numeroOS} style={styles.input} />
-      <button
-  type="button"
-  onClick={() => {
-    codeReader.decodeFromVideoDevice(null, videoRef.current, (result, err) => {
-      if (result) {
-        setFormHeaderData((prev) => ({
-          ...prev,
-          numeroSerie: result.getText()
-        }));
-        codeReader.reset();
-      }
-    });
-  }}
->
-  📷 Escanear
-</button>
-
-<video ref={videoRef} style={{ width: '300px', marginTop: '1rem' }} />
-
       <input name="numeroSerie" placeholder="Número de Série" onChange={handleHeaderChange} value={formHeaderData.numeroSerie} style={styles.input} />
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-
+      <input
+  type="file"
+  accept="image/*"
+  capture="environment"
+  style={{ display: 'none' }}
+  ref={fileInputRef}
+  onChange={handleFileUpload}
+/>
+<button
+  type="button"
+  onClick={() => fileInputRef.current.click()}
+>
+  📷 Escanear Código
+</button>
 </div>
 
 <div id="reader" style={{ width: '300px', marginTop: '1rem' }}></div>
-      <input name="dataVisita" placeholder="Data Visita" onChange={handleHeaderChange} value={formHeaderData.dataVisita} style={styles.input} />
+      <input type= "date" name="dataVisita" placeholder="Data Visita" onChange={handleHeaderChange} value={formHeaderData.dataVisita} style={styles.input} />
       <input name="nomeTecnico" placeholder="Nome do Técnico" onChange={handleHeaderChange} value={formHeaderData.nomeTecnico} style={styles.input} />
 
       {/* Seleção Bloco */}
