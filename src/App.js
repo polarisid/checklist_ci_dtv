@@ -290,13 +290,13 @@ const handleFileUpload = async (event) => {
     const { width, height } = firstPage.getSize();
 
     // Cabeçalho preenchendo
-    firstPage.drawText(formHeaderData.cliente, { x: 95, y: height - 80, size: 10, font });
-    firstPage.drawText(formHeaderData.modelo, { x: 95, y: height - 95, size: 10, font });
-    firstPage.drawText(formHeaderData.numeroOS, { x: 385, y: height - 66, size: 10, font });
-    firstPage.drawText(formHeaderData.numeroSerie, { x: 385, y: height - 80, size: 10, font });
+    firstPage.drawText((formHeaderData.cliente).toUpperCase(), { x: 95, y: height - 80, size: 10, font });
+    firstPage.drawText(formHeaderData.modelo.toUpperCase(), { x: 95, y: height - 95, size: 10, font });
+    firstPage.drawText(formHeaderData.numeroOS.toUpperCase(), { x: 385, y: height - 66, size: 10, font });
+    firstPage.drawText(formHeaderData.numeroSerie.toUpperCase(), { x: 385, y: height - 80, size: 10, font });
     firstPage.drawText(formatarData(formHeaderData.dataVisita), { x: 385, y: height - 95, size: 10, font });
-    firstPage.drawText(formHeaderData.versao, { x: 270, y: height - 95, size: 10, font });
-    firstPage.drawText(formHeaderData.nomeTecnico, { x: 120, y: height - 800, size: 10, font });
+    firstPage.drawText(formHeaderData.versao.toUpperCase(), { x: 270, y: height - 95, size: 10, font });
+    firstPage.drawText(formHeaderData.nomeTecnico.toUpperCase(), { x: 120, y: height - 800, size: 10, font });
 
     // Sintomas: desenhar X
     const drawIfChecked = (name, x, y) => {
@@ -375,7 +375,7 @@ const handleFileUpload = async (event) => {
       let startY = height - 755;
     
       lines.forEach((line, idx) => {
-        firstPage.drawText(line, { x: 55, y: startY - (idx * 15), size: 10, font });
+        firstPage.drawText(line.toUpperCase(), { x: 55, y: startY - (idx * 15), size: 10, font });
       });
     }
 
@@ -394,7 +394,7 @@ const handleFileUpload = async (event) => {
     }
 
     const pdfBytes = await pdfDoc.save();
-    saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), `${formHeaderData.numeroOS || 'checklist'}.pdf`);
+    saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), `${formHeaderData.cliente || 'checklist'}.pdf`);
   };
 
   return (
